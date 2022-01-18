@@ -1,29 +1,14 @@
-# README #
+## Microservices Architecture Docker Compose File
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This Repo consists of Docker Composed file for a Microservices Architecture that is connected to the following repos:
+1. [Book Service](https://github.com/Shreejaa/book_api)
+2. [User Service](https://github.com/Shreejaa/user_api)
+3. [Library Service](https://github.com/Shreejaa/library_api)
+4. [Cloud Server](https://github.com/Shreejaa/cloud_server)
+5. [Discovery Server](https://github.com/Shreejaa/discovery_server)
+6. [Docker Compose](https://github.com/Shreejaa/Microservices_docker_compose)
+7. [Configurations](https://github.com/Shreejaa/Microservices_config)
+8. [API Gateway](https://github.com/Shreejaa/gateway)
 
-### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+![Arch](https://github.com/Shreejaa/Microservices_docker_compose/blob/master/MicroArch.jpg)
