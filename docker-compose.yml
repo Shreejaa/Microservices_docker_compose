@@ -1,0 +1,115 @@
+version : "3"
+services:
+ cloudconfig:
+  container_name: cloudconfig
+  image: shreejaa/jpop:cloudserver
+  ports:
+   - "6254:6254"
+ discovery:
+  container_name: discovery
+  image: shreejaa/jpop:discoveryservice
+  ports:
+   - "8761:8761"
+ bookserver:
+  image: bookserver:0.0.5
+  environment:
+            SPRING_APPLICATION_JSON: '{"spring": {"cloud": {"config": {"uri": "http://192.168.99.100:6254"}}}}'
+            SPRING_DATASOURCE_URL: jdbc:mysql://booksql:3306/booksdb?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+            EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://192.168.99.100:8761/eureka
+  restart: on-failure
+  ports:
+   - "8082:8082"
+  networks:
+   - lms
+  links:
+   - cloudconfig
+   - discovery
+  depends_on:
+   - booksql
+ userserver:
+  image: userserver:0.0.5
+  environment:
+            SPRING_APPLICATION_JSON: '{"spring": {"cloud": {"config": {"uri": "http://192.168.99.100:6254"}}}}'
+            SPRING_DATASOURCE_URL: jdbc:mysql://usersql:3306/usersdb?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+            EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://192.168.99.100:8761/eureka
+  restart: on-failure
+  ports:
+   - "8083:8083"
+  networks:
+   - lms
+  links:
+   - cloudconfig
+   - discovery
+  depends_on:
+   - usersql
+ libraryserver:
+  image: libraryserver:0.0.4
+  environment:
+            SPRING_APPLICATION_JSON: '{"spring": {"cloud": {"config": {"uri": "http://192.168.99.100:6254"}}}}'
+            SPRING_DATASOURCE_URL: jdbc:mysql://librarysql:3306/librarydb?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+            EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://192.168.99.100:8761/eureka
+  restart: on-failure
+  ports:
+   - "8081:8081" 
+  networks:
+   - lms
+  links:
+   - discovery 
+   - bookserver
+   - userserver
+  depends_on:
+   - librarysql
+ booksql:
+  image: mysql:8
+  ports:
+   - "3307:3306"
+  networks:
+   - lms
+  environment:
+   - MYSQL_ROOT_PASSWORD=root
+   - MYSQL_DATABASE=booksdb
+  volumes:
+   - bookdata:/var/lib/mysql
+ usersql:
+  image: mysql:8
+  ports:
+   - "3308:3306"
+  networks:
+   - lms
+  environment:
+   - MYSQL_ROOT_PASSWORD=root
+   - MYSQL_DATABASE=usersdb
+  volumes:
+   - userdata:/var/lib/mysql
+ librarysql:
+  image: mysql:8
+  ports:
+   - "3309:3306"
+  networks:
+   - lms
+  environment:
+   - MYSQL_ROOT_PASSWORD=root
+   - MYSQL_DATABASE=librarydb
+  volumes:
+   - libdata:/var/lib/mysql
+ apigateway:
+  image: apigatwayserver:0.0.1
+  environment:
+            EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE: http://192.168.99.100:8761/eureka
+  restart: on-failure
+  ports:
+   - "9000:9000" 
+  networks:
+   - lms
+  links:
+   - discovery
+   - bookserver
+   - userserver
+   - libraryserver   
+networks:
+  lms: 
+
+volumes:
+    bookdata:
+    userdata:
+    libdata:
